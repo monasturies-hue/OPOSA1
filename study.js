@@ -29,7 +29,7 @@ const STUDY = [
     part: "comuna",
     bloc: "Part Comuna General",
     numero: 1,
-    titol: "Bon govern. Principis ètics i de conducta dels empleats públics. Dret a una bona administració. Cartes de serveis. Govern obert. Dades obertes.",
+    titol: "Bon Govern. Principis ètics i de conducta dels empleats públics. Dret a una bona administració. Cartes de serveis. Govern obert. Dades obertes.",
     resum: "El bon govern i l'ètica pública constitueixen el marc de referència per a l'actuació dels empleats de la Generalitat. Les cartes de serveis i el govern obert són instruments clau per garantir la qualitat dels serveis públics i la participació ciutadana.",
     apartats: [
       {
