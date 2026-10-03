@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1e3a5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Opos A1">
+<link rel="manifest" href="manifest.json">
+<title>Opos A1 — Generalitat de Catalunya</title>
+<script src="questions.js"></script>
+<script src="study.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1e3a5f;--blue-mid:#2563eb;--blue-light:#dbeafe;--blue-pale:#eff6ff;
+  --purple:#7c3aed;--purple-light:#ede9fe;
+  --green:#059669;--green-light:#d1fae5;
+  --red:#dc2626;--red-light:#fee2e2;
+  --amber:#d97706;--amber-light:#fef3c7;
+  --gray-0:#ffffff;--gray-1:#f8fafc;--gray-2:#f1f5f9;--gray-3:#e2e8f0;
+  --gray-4:#cbd5e1;--gray-5:#94a3b8;--gray-6:#64748b;--gray-7:#334155;
+  --gray-8:#1e293b;--gray-9:#0f172a;
+  --radius:8px;--radius-md:12px;--radius-lg:16px;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --gray-0:#0f172a;--gray-1:#1e293b;--gray-2:#1e293b;--gray-3:#334155;
+    --gray-4:#475569;--gray-5:#64748b;--gray-6:#94a3b8;--gray-7:#cbd5e1;
+    --gray-8:#e2e8f0;--gray-9:#f8fafc;
+    --blue-light:#1e3a5f;--blue-pale:#172554;--purple-light:#2e1065;
+    --green-light:#064e3b;--red-light:#7f1d1d;--amber-light:#78350f;
+  }
+}
+html{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray-1);color:var(--gray-9);height:100%;overflow:hidden;padding-top:var(--safe-top);-webkit-font-smoothing:antialiased}
+.app{display:flex;flex-direction:column;height:100%}
+.screen{display:none;flex-direction:column;height:100%;overflow:hidden}
+.screen.active{display:flex}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+/* TOP BAR */
+.topbar{background:var(--blue);padding:12px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.topbar-back{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px;display:flex;align-items:center}
+.topbar-title{color:#fff;font-size:16px;font-weight:600;flex:1}
+.topbar-sub{color:rgba(255,255,255,.7);font-size:13px}
+
+/* HOME */
+.home-hero{background:linear-gradient(160deg,var(--blue) 0%,#1d4ed8 100%);padding:24px 20px 20px;color:white}
+.home-logo{font-size:12px;font-weight:500;opacity:.7;letter-spacing:.5px;margin-bottom:6px}
+.home-title{font-size:24px;font-weight:700;line-height:1.2;margin-bottom:4px}
+.home-sub{font-size:13px;opacity:.8;line-height:1.5}
+.home-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:14px}
+.stat-card{background:var(--gray-0);border-radius:var(--radius-md);padding:12px 8px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.stat-num{font-size:20px;font-weight:700;color:var(--blue-mid)}
+.stat-label{font-size:11px;color:var(--gray-6);margin-top:2px;line-height:1.3}
+.section-title{font-size:12px;font-weight:600;color:var(--gray-6);text-transform:uppercase;letter-spacing:.6px;padding:14px 16px 8px}
+.bloc-list{padding:0 16px 16px;display:flex;flex-direction:column;gap:8px}
+.bloc-card{background:var(--gray-0);border-radius:var(--radius-lg);padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.bloc-card:active{opacity:.8;transform:scale(.99)}
+.bloc-icon{width:42px;height:42px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.bloc-info{flex:1;min-width:0}
+.bloc-name{font-size:14px;font-weight:600;color:var(--gray-9)}
+.bloc-meta{font-size:12px;color:var(--gray-6);margin-top:1px}
+.bloc-arrow{color:var(--gray-4);font-size:18px}
+
+/* MODE SELECTOR */
+.mode-list{padding:0 16px 80px;display:flex;flex-direction:column;gap:8px}
+.mode-card{background:var(--gray-0);border-radius:var(--radius-lg);padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mode-card:active{opacity:.8}
+.mode-icon{font-size:26px;width:42px;text-align:center;flex-shrink:0}
+.mode-info{flex:1}
+.mode-name{font-size:14px;font-weight:600;color:var(--gray-9)}
+.mode-desc{font-size:12px;color:var(--gray-6);margin-top:2px;line-height:1.4}
+
+/* QUIZ */
+.quiz-topbar{background:var(--blue);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.quiz-progress-bar{flex:1;height:5px;background:rgba(255,255,255,.25);border-radius:3px}
+.quiz-progress-fill{height:5px;background:#60a5fa;border-radius:3px;transition:width .3s}
+.quiz-counter{color:rgba(255,255,255,.8);font-size:12px;min-width:40px;text-align:right}
+.q-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px 100px}
+.q-bloc-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;margin-bottom:8px}
+.q-anulada-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--amber-light);color:var(--amber);margin-left:5px}
+.q-tema{font-size:12px;color:var(--gray-6);margin-bottom:6px}
+.q-text{font-size:15px;font-weight:500;color:var(--gray-9);line-height:1.6;margin-bottom:14px}
+.q-examen{font-size:11px;color:var(--gray-5);margin-bottom:14px}
+.options{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.opt-btn{background:var(--gray-0);border:1.5px solid var(--gray-3);border-radius:var(--radius-md);padding:12px 14px;display:flex;align-items:flex-start;gap:10px;cursor:pointer;text-align:left;width:100%;transition:border-color .12s,background .12s;-webkit-tap-highlight-color:transparent}
+.opt-btn:active:not(:disabled){transform:scale(.99)}
+.opt-btn:disabled{cursor:default}
+.opt-letter{font-size:13px;font-weight:700;color:var(--gray-5);min-width:18px;margin-top:1px;flex-shrink:0}
+.opt-text{font-size:14px;color:var(--gray-8);line-height:1.5}
+.opt-btn.selected{border-color:var(--blue-mid);background:var(--blue-pale)}
+.opt-btn.selected .opt-letter{color:var(--blue-mid)}
+.opt-btn.correct{border-color:var(--green);background:var(--green-light)}
+.opt-btn.correct .opt-letter,.opt-btn.correct .opt-text{color:var(--green)}
+.opt-btn.wrong{border-color:var(--red);background:var(--red-light)}
+.opt-btn.wrong .opt-letter,.opt-btn.wrong .opt-text{color:var(--red)}
+.feedback-box{border-radius:var(--radius-md);padding:14px;margin-bottom:12px;display:none}
+.feedback-box.ok{background:var(--green-light);border:1px solid var(--green)}
+.feedback-box.ko{background:var(--red-light);border:1px solid var(--red)}
+.feedback-box.anulada{background:var(--amber-light);border:1px solid var(--amber)}
+.feedback-verdict{font-size:14px;font-weight:700;margin-bottom:6px}
+.feedback-exp{font-size:13px;line-height:1.6;color:var(--gray-8);margin-bottom:10px}
+.feedback-meta{display:flex;flex-direction:column;gap:6px}
+.feedback-meta-row{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--gray-7)}
+.feedback-meta-label{font-weight:600;color:var(--gray-6);min-width:58px;flex-shrink:0}
+.feedback-meta-val{flex:1;line-height:1.4}
+.study-link-btn{display:flex;align-items:center;gap:6px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:var(--radius);padding:8px 12px;font-size:12px;font-weight:600;color:var(--blue-mid);cursor:pointer;margin-top:8px;-webkit-tap-highlight-color:transparent;width:100%;justify-content:center}
+.q-bottom{position:fixed;bottom:0;left:0;right:0;background:var(--gray-0);border-top:1px solid var(--gray-3);padding:10px 16px;padding-bottom:calc(10px + var(--safe-bot))}
+.btn-action{width:100%;padding:14px;border:none;border-radius:var(--radius-lg);font-size:15px;font-weight:700;cursor:pointer;background:var(--blue);color:white;-webkit-tap-highlight-color:transparent}
+.btn-action:active{opacity:.85}
+.btn-action:disabled{background:var(--gray-3);color:var(--gray-5);cursor:default}
+.btn-action.secondary{background:var(--gray-2);color:var(--gray-8);margin-top:7px;font-size:13px;font-weight:600}
+.q-bottom-wrap{display:flex;flex-direction:column;gap:0}
+
+/* RESULTS */
+.results-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.results-hero{background:linear-gradient(160deg,var(--blue) 0%,#1d4ed8 100%);padding:24px 20px;text-align:center;color:white}
+.results-pct{font-size:60px;font-weight:800;line-height:1;margin-bottom:4px}
+.results-label{font-size:15px;opacity:.85;margin-bottom:3px}
+.results-sub{font-size:12px;opacity:.65}
+.results-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:14px}
+.results-stat{background:var(--gray-0);border-radius:var(--radius-md);padding:12px 8px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.results-stat-num{font-size:24px;font-weight:700}
+.results-stat-label{font-size:11px;color:var(--gray-6);margin-top:2px}
+.color-ok{color:var(--green)}.color-ko{color:var(--red)}.color-skip{color:var(--amber)}
+.results-nota{margin:0 16px;padding:12px 14px;border-radius:var(--radius-md);background:var(--gray-0);box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;justify-content:space-between;align-items:center}
+.results-nota-label{font-size:13px;color:var(--gray-6)}
+.results-nota-val{font-size:20px;font-weight:700;color:var(--blue-mid)}
+.results-msg{margin:10px 16px;padding:12px 14px;border-radius:var(--radius-md);font-size:13px;line-height:1.5}
+.results-actions{padding:10px 16px 80px;display:flex;flex-direction:column;gap:8px}
+.btn-result{width:100%;padding:14px;border:none;border-radius:var(--radius-lg);font-size:14px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.btn-result:active{opacity:.85}
+.btn-result.primary{background:var(--blue);color:white}
+.btn-result.secondary{background:var(--gray-2);color:var(--gray-8);font-weight:600}
+
+/* STUDY */
+.study-hero{background:linear-gradient(160deg,#4c1d95 0%,var(--purple) 100%);padding:24px 20px 20px;color:white}
+.part-tabs{display:flex;gap:0;padding:12px 16px;border-bottom:1px solid var(--gray-3);background:var(--gray-0);flex-shrink:0}
+.part-tab{flex:1;padding:8px 4px;border:none;background:none;cursor:pointer;border-radius:var(--radius);font-size:13px;font-weight:500;color:var(--gray-6);display:flex;flex-direction:column;align-items:center;gap:2px;-webkit-tap-highlight-color:transparent}
+.part-tab.active{background:var(--purple-light);color:var(--purple)}
+.part-tab-icon{font-size:18px}
+.part-tab-label{font-size:11px}
+.study-list{padding:0 16px 80px;display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.study-card{background:var(--gray-0);border-radius:var(--radius-lg);padding:14px;display:flex;align-items:flex-start;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.study-card:active{opacity:.8}
+.study-num{font-size:12px;font-weight:700;color:var(--gray-5);min-width:30px;padding-top:2px}
+.study-info{flex:1;min-width:0}
+.study-title{font-size:13px;font-weight:600;color:var(--gray-9);line-height:1.4}
+.study-bloc{font-size:11px;color:var(--gray-6);margin-top:3px}
+.study-arrow{color:var(--gray-4);font-size:18px;margin-top:2px}
+
+/* STUDY DETAIL */
+.detail-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.detail-hero{padding:20px 16px;background:var(--gray-0);border-bottom:1px solid var(--gray-3)}
+.detail-part{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.detail-num{font-size:13px;color:var(--gray-6);margin-bottom:6px}
+.detail-title{font-size:16px;font-weight:700;color:var(--gray-9);line-height:1.4}
+.detail-resum{font-size:13px;color:var(--gray-6);line-height:1.6;margin-top:8px}
+.detail-body{padding:0 16px 80px}
+.detail-section{margin-top:16px}
+.detail-section-title{font-size:13px;font-weight:700;color:var(--blue-mid);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.detail-section-title::before{content:'';display:inline-block;width:3px;height:14px;background:var(--blue-mid);border-radius:2px}
+.detail-section-content{font-size:13px;color:var(--gray-8);line-height:1.7}
+.claus-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:12px}
+.claus-table th{background:var(--blue);color:white;padding:8px 10px;text-align:left;font-weight:600}
+.claus-table td{padding:8px 10px;border-bottom:1px solid var(--gray-3);vertical-align:top}
+.claus-table tr:last-child td{border-bottom:none}
+.claus-table td:first-child{color:var(--gray-7);font-weight:500;width:55%}
+.claus-table td:last-child{color:var(--blue-mid);font-weight:700;width:45%}
+.claus-table tr:nth-child(even) td{background:var(--gray-1)}
+.nota-box{background:var(--amber-light);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:10px 12px;margin-top:12px;font-size:12px;color:var(--gray-8);line-height:1.6}
+.nota-box strong{color:var(--amber)}
+.test-link-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:white;border:none;border-radius:var(--radius-lg);padding:14px;font-size:14px;font-weight:700;cursor:pointer;margin-top:16px;width:100%;-webkit-tap-highlight-color:transparent}
+.test-link-btn:active{opacity:.85}
+
+/* REVIEW */
+.review-list{padding:12px 16px 80px;display:flex;flex-direction:column;gap:10px}
+.review-card{background:var(--gray-0);border-radius:var(--radius-md);padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.review-q{font-size:13px;color:var(--gray-8);line-height:1.5;margin-bottom:8px;font-weight:500}
+.review-your{font-size:12px;color:var(--red);margin-bottom:3px}
+.review-correct{font-size:12px;color:var(--green)}
+
+/* HISTORIAL */
+.hist-list{padding:0 16px 80px;display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.hist-card{background:var(--gray-0);border-radius:var(--radius-md);padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;align-items:center;gap:12px}
+.hist-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.hist-info{flex:1}
+.hist-title{font-size:14px;font-weight:600;color:var(--gray-9)}
+.hist-sub{font-size:12px;color:var(--gray-6);margin-top:2px}
+.hist-empty{text-align:center;padding:48px 20px;color:var(--gray-6);font-size:14px;line-height:1.6}
+
+/* BOTTOM NAV — 4 pestanyes */
+.bottom-nav{background:var(--gray-0);border-top:1px solid var(--gray-3);display:flex;flex-shrink:0;padding-bottom:var(--safe-bot)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0;gap:2px;background:none;border:none;cursor:pointer;color:var(--gray-5);font-size:10px;-webkit-tap-highlight-color:transparent}
+.nav-btn.active{color:var(--blue-mid)}
+.nav-icon{font-size:20px;line-height:1}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(65px + var(--safe-bot));left:50%;transform:translateX(-50%);background:var(--gray-8);color:white;padding:10px 18px;border-radius:99px;font-size:13px;font-weight:500;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1}
+.hidden{display:none!important}
+.mt8{margin-top:8px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HOME -->
+<div class="screen active" id="screen-home">
+  <div class="scroll">
+    <div class="home-hero">
+      <div class="home-logo">GENERALITAT DE CATALUNYA · COS SUPERIOR A1</div>
+      <div class="home-title">Opos A1</div>
+      <div class="home-sub">Preguntes reals de l'examen 871 · Temari oficial 2022</div>
+    </div>
+    <div class="home-stats" id="home-stats"></div>
+    <div class="section-title">Blocs de test</div>
+    <div class="bloc-list" id="bloc-list"></div>
+  </div>
+  <div class="bottom-nav" id="nav-home">
+    <button class="nav-btn active" onclick="goScreen('home')"><span class="nav-icon">🏠</span><span>Inici</span></button>
+    <button class="nav-btn" onclick="goScreen('study-home')"><span class="nav-icon">📖</span><span>Estudia</span></button>
+    <button class="nav-btn" onclick="goScreen('historial')"><span class="nav-icon">📊</span><span>Historial</span></button>
+    <button class="nav-btn" onclick="showInfo()"><span class="nav-icon">ℹ️</span><span>Info</span></button>
+  </div>
+</div>
+
+<!-- MODE SELECTOR -->
+<div class="screen" id="screen-mode">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goScreen('home')">←</button>
+    <div><div class="topbar-title" id="mode-bloc-name"></div><div class="topbar-sub" id="mode-bloc-count"></div></div>
+  </div>
+  <div class="scroll"><div class="section-title">Selecciona el mode</div><div class="mode-list" id="mode-list"></div></div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="screen-quiz">
+  <div class="quiz-topbar">
+    <button onclick="confirmExit()" style="color:white;background:none;border:none;font-size:22px;cursor:pointer;padding:4px">←</button>
+    <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="q-progress" style="width:0%"></div></div>
+    <div class="quiz-counter" id="q-counter">0/0</div>
+  </div>
+  <div class="q-scroll" id="q-scroll">
+    <div><span class="q-bloc-tag" id="q-bloc-tag"></span><span class="q-anulada-tag hidden" id="q-anulada-tag">⚠ ANUL·LADA</span></div>
+    <div class="q-tema" id="q-tema"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-examen" id="q-examen"></div>
+    <div class="options" id="q-options"></div>
+    <div class="feedback-box" id="q-feedback">
+      <div class="feedback-verdict" id="fb-verdict"></div>
+      <div class="feedback-exp" id="fb-exp"></div>
+      <div class="feedback-meta">
+        <div class="feedback-meta-row"><span class="feedback-meta-label">Llei:</span><span class="feedback-meta-val" id="fb-llei"></span></div>
+        <div class="feedback-meta-row"><span class="feedback-meta-label">Article:</span><span class="feedback-meta-val" id="fb-art"></span></div>
+        <div class="feedback-meta-row"><span class="feedback-meta-label">Document:</span><span class="feedback-meta-val" id="fb-doc"></span></div>
+      </div>
+      <button class="study-link-btn hidden" id="btn-study-link" onclick="goToStudyFromQ()">📖 Llegir el tema relacionat</button>
+    </div>
+  </div>
+  <div class="q-bottom">
+    <div class="q-bottom-wrap">
+      <button class="btn-action" id="btn-confirm" onclick="confirmAnswer()" disabled>Confirmar resposta</button>
+      <button class="btn-action secondary hidden" id="btn-next" onclick="nextQuestion()">Següent →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="screen-results">
+  <div class="results-scroll">
+    <div class="results-hero">
+      <div class="results-pct" id="res-pct">0%</div>
+      <div class="results-label" id="res-label">Resultat</div>
+      <div class="results-sub" id="res-sub"></div>
+    </div>
+    <div class="results-grid">
+      <div class="results-stat"><div class="results-stat-num color-ok" id="res-ok">0</div><div class="results-stat-label">✓ Correctes</div></div>
+      <div class="results-stat"><div class="results-stat-num color-ko" id="res-ko">0</div><div class="results-stat-label">✗ Incorrectes</div></div>
+      <div class="results-stat"><div class="results-stat-num color-skip" id="res-skip">0</div><div class="results-stat-label">— Omeses</div></div>
+    </div>
+    <div class="results-nota">
+      <div><div class="results-nota-label">Nota estimada</div><div style="font-size:11px;color:var(--gray-5);margin-top:2px">Penalització 1/3 per error</div></div>
+      <div class="results-nota-val" id="res-nota">—</div>
+    </div>
+    <div class="results-nota mt8" style="flex-direction:column;align-items:flex-start;gap:0">
+      <div style="font-size:13px;color:var(--gray-6);font-weight:600;margin-bottom:6px">Per bloc:</div>
+      <div id="res-by-bloc" style="width:100%"></div>
+    </div>
+    <div class="results-msg" id="res-msg"></div>
+    <div class="results-actions">
+      <button class="btn-result primary" onclick="reviewWrong()">Revisar incorrectes</button>
+      <button class="btn-result secondary" onclick="retrySession()">Repetir test</button>
+      <button class="btn-result secondary" onclick="goScreen('home')">Tornar a l'inici</button>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW WRONG -->
+<div class="screen" id="screen-review">
+  <div class="topbar"><button class="topbar-back" onclick="goScreen('results')">←</button><div class="topbar-title">Respostes incorrectes</div></div>
+  <div class="scroll"><div class="review-list" id="review-list"></div></div>
+</div>
+
+<!-- HISTORIAL -->
+<div class="screen" id="screen-historial">
+  <div class="topbar"><button class="topbar-back" onclick="goScreen('home')">←</button><div class="topbar-title">Historial de resultats</div></div>
+  <div class="scroll"><div class="hist-list" id="hist-list"></div></div>
+</div>
+
+<!-- STUDY HOME -->
+<div class="screen" id="screen-study-home">
+  <div class="study-hero">
+    <div class="home-logo">MATERIAL D'ESTUDI</div>
+    <div class="home-title">Estudia per temes</div>
+    <div class="home-sub">35 temes part comuna · 30 temes part específica</div>
+  </div>
+  <div class="part-tabs" id="part-tabs">
+    <button class="part-tab active" onclick="switchPart('comuna')"><span class="part-tab-icon">📘</span><span class="part-tab-label">Part Comuna</span></button>
+    <button class="part-tab" onclick="switchPart('especifica')"><span class="part-tab-icon">📗</span><span class="part-tab-label">Part Específica</span></button>
+  </div>
+  <div class="scroll"><div class="study-list" id="study-list"></div></div>
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="goScreen('home')"><span class="nav-icon">🏠</span><span>Inici</span></button>
+    <button class="nav-btn active" onclick="goScreen('study-home')"><span class="nav-icon">📖</span><span>Estudia</span></button>
+    <button class="nav-btn" onclick="goScreen('historial')"><span class="nav-icon">📊</span><span>Historial</span></button>
+    <button class="nav-btn" onclick="showInfo()"><span class="nav-icon">ℹ️</span><span>Info</span></button>
+  </div>
+</div>
+
+<!-- STUDY DETAIL -->
+<div class="screen" id="screen-study-detail">
+  <div class="topbar"><button class="topbar-back" onclick="goScreen('study-home')">←</button><div class="topbar-title" id="detail-topbar-title">Tema</div></div>
+  <div class="detail-scroll">
+    <div class="detail-hero">
+      <div class="detail-part" id="detail-part"></div>
+      <div class="detail-num" id="detail-num"></div>
+      <div class="detail-title" id="detail-title"></div>
+      <div class="detail-resum" id="detail-resum"></div>
+    </div>
+    <div class="detail-body" id="detail-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// ESTAT GLOBAL
+// ═══════════════════════════════════════════
+let state={currentBloc:null,sessionQs:[],sessionIdx:0,answers:[],revealed:[],mode:null,currentStudyId:null,studyPart:'comuna'};
+
+// ═══════════════════════════════════════════
+// NAVEGACIÓ
+// ═══════════════════════════════════════════
+function goScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  if(name==='home')renderHome();
+  if(name==='historial')renderHistorial();
+  if(name==='study-home')renderStudyHome();
+}
+
+// ═══════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════
+function renderHome(){
+  const hist=loadHistory();
+  const total=QUESTIONS.length;
+  document.getElementById('home-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Preguntes disponibles</div></div>
+    <div class="stat-card"><div class="stat-num">${hist.length}</div><div class="stat-label">Tests realitzats</div></div>
+    <div class="stat-card"><div class="stat-num">${hist.length>0?Math.max(...hist.map(h=>h.pct))+'%':'—'}</div><div class="stat-label">Millor resultat</div></div>
+  `;
+  const blocsMap={};
+  QUESTIONS.forEach(q=>{if(!blocsMap[q.bloc])blocsMap[q.bloc]={total:0};blocsMap[q.bloc].total++;});
+  const container=document.getElementById('bloc-list');
+  container.innerHTML='';
+  Object.entries(blocsMap).forEach(([bloc,info])=>{
+    const cfg=BLOCS[bloc]||{color:'#4b5563',bg:'#f3f4f6',icon:'📚'};
+    const card=document.createElement('div');
+    card.className='bloc-card';
+    card.innerHTML=`<div class="bloc-icon" style="background:${cfg.bg}">${cfg.icon}</div><div class="bloc-info"><div class="bloc-name">${bloc}</div><div class="bloc-meta">${info.total} preguntes · Examen 871/2026</div></div><div class="bloc-arrow">›</div>`;
+    card.onclick=()=>openBloc(bloc);
+    container.appendChild(card);
+  });
+}
+
+function openBloc(bloc){
+  state.currentBloc=bloc;
+  const qs=QUESTIONS.filter(q=>q.bloc===bloc);
+  document.getElementById('mode-bloc-name').textContent=bloc;
+  document.getElementById('mode-bloc-count').textContent=qs.length+' preguntes disponibles';
+  const modes=[
+    {key:'all',icon:'📋',name:'Tot el bloc',desc:`Les ${qs.length} preguntes del bloc en ordre aleatori`},
+    {key:'random10',icon:'🎲',name:'10 aleatòries',desc:'Selecció aleatòria de 10 preguntes'},
+    {key:'random20',icon:'🔀',name:'20 aleatòries',desc:'Selecció aleatòria de 20 preguntes'},
+    {key:'wrongonly',icon:'🔁',name:'Respostes incorrectes',desc:'Practica les preguntes que has fallat'},
+    {key:'allblocs',icon:'🌐',name:'Tots els blocs',desc:'Barreja de tots els temes disponibles (30 preguntes)'},
+  ];
+  const container=document.getElementById('mode-list');
+  container.innerHTML='';
+  modes.forEach(m=>{
+    if(m.key==='random10'&&qs.length<10)return;
+    if(m.key==='random20'&&qs.length<20)return;
+    const card=document.createElement('div');
+    card.className='mode-card';
+    card.innerHTML=`<div class="mode-icon">${m.icon}</div><div class="mode-info"><div class="mode-name">${m.name}</div><div class="mode-desc">${m.desc}</div></div>`;
+    card.onclick=()=>startSession(m.key);
+    container.appendChild(card);
+  });
+  goScreen('mode');
+}
+
+// ═══════════════════════════════════════════
+// SESSIÓ DE TEST
+// ═══════════════════════════════════════════
+function startSession(mode){
+  state.mode=mode;
+  let pool;
+  if(mode==='allblocs'){pool=shuffle([...QUESTIONS]).slice(0,30);}
+  else if(mode==='wrongonly'){
+    const hist=loadHistory();const wrongIds=new Set();
+    hist.forEach(h=>h.wrong?.forEach(id=>wrongIds.add(id)));
+    pool=QUESTIONS.filter(q=>wrongIds.has(q.id));
+    if(pool.length===0){showToast('Encara no tens respostes incorrectes guardades');return;}
+  } else {
+    pool=QUESTIONS.filter(q=>q.bloc===state.currentBloc);
+  }
+  if(mode==='random10')pool=shuffle(pool).slice(0,10);
+  else if(mode==='random20')pool=shuffle(pool).slice(0,20);
+  else pool=shuffle(pool);
+  state.sessionQs=pool;state.sessionIdx=0;
+  state.answers=new Array(pool.length).fill(null);
+  state.revealed=new Array(pool.length).fill(false);
+  renderQuestion();goScreen('quiz');
+}
+
+function retrySession(){startSession(state.mode);}
+
+// ═══════════════════════════════════════════
+// PREGUNTA
+// ═══════════════════════════════════════════
+function renderQuestion(){
+  const q=state.sessionQs[state.sessionIdx];
+  const idx=state.sessionIdx;
+  const total=state.sessionQs.length;
+  const cfg=BLOCS[q.bloc]||{color:'#4b5563',bg:'#f3f4f6',icon:'📚'};
+  document.getElementById('q-progress').style.width=((idx+1)/total*100)+'%';
+  document.getElementById('q-counter').textContent=(idx+1)+'/'+total;
+  document.getElementById('q-scroll').scrollTo(0,0);
+  const tag=document.getElementById('q-bloc-tag');
+  tag.textContent=cfg.icon+' '+q.bloc;tag.style.background=cfg.bg;tag.style.color=cfg.color;
+  document.getElementById('q-anulada-tag').classList.toggle('hidden',!q.anulada);
+  document.getElementById('q-tema').textContent=q.tema;
+  document.getElementById('q-text').textContent=q.pregunta;
+  document.getElementById('q-examen').textContent='📝 Examen '+q.examen+(q.anulada?'  ·  ⚠ Pregunta anul·lada':'');
+  const container=document.getElementById('q-options');
+  container.innerHTML='';
+  const letters=['a)','b)','c)','d)'];
+  q.opcions.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt-btn';
+    btn.innerHTML=`<span class="opt-letter">${letters[i]}</span><span class="opt-text">${opt}</span>`;
+    if(state.revealed[idx]){btn.disabled=true;if(i===q.correcta)btn.classList.add('correct');else if(state.answers[idx]===i)btn.classList.add('wrong');}
+    else if(state.answers[idx]===i){btn.classList.add('selected');}
+    btn.onclick=()=>{if(state.revealed[idx])return;state.answers[idx]=i;renderQuestion();};
+    container.appendChild(btn);
+  });
+  const fb=document.getElementById('q-feedback');
+  if(state.revealed[idx]){
+    const isAnulada=!!q.anulada;const isOk=state.answers[idx]===q.correcta||isAnulada;
+    fb.className='feedback-box '+(isAnulada?'anulada':isOk?'ok':'ko');
+    fb.style.display='block';
+    const verdict=document.getElementById('fb-verdict');
+    verdict.textContent=isAnulada?'⚠ Pregunta anul·lada — puntuació per a tothom':isOk?'✓ Correcte!':'✗ Incorrecte — La resposta correcta és '+letters[q.correcta];
+    verdict.style.color=isAnulada?'var(--amber)':isOk?'var(--green)':'var(--red)';
+    document.getElementById('fb-exp').textContent=q.explicacio;
+    document.getElementById('fb-llei').textContent=q.llei;
+    document.getElementById('fb-art').textContent=q.article;
+    document.getElementById('fb-doc').textContent=q.document;
+    // Botó per anar al tema d'estudi relacionat
+    const studyBtn=document.getElementById('btn-study-link');
+    const studyTema=findStudyForQuestion(q);
+    if(studyTema){studyBtn.classList.remove('hidden');studyBtn.dataset.studyId=studyTema.id;}
+    else{studyBtn.classList.add('hidden');}
+  } else {fb.style.display='none';}
+  const btnConfirm=document.getElementById('btn-confirm');
+  const btnNext=document.getElementById('btn-next');
+  const isLast=idx===total-1;
+  if(state.revealed[idx]){btnConfirm.classList.add('hidden');btnNext.classList.remove('hidden');btnNext.textContent=isLast?'Veure resultats →':'Següent →';}
+  else{btnConfirm.classList.remove('hidden');btnConfirm.disabled=state.answers[idx]===null;btnNext.classList.add('hidden');}
+}
+
+function findStudyForQuestion(q){
+  // Cerca per bloc coincident
+  return STUDY.find(s=>s.bloc===q.bloc)||(STUDY.find(s=>q.document&&s.titol&&q.document.includes('T'+s.numero)))||null;
+}
+
+function goToStudyFromQ(){
+  const btn=document.getElementById('btn-study-link');
+  const id=btn.dataset.studyId;
+  if(id){openStudyDetail(id,true);}
+}
+
+function confirmAnswer(){
+  const idx=state.sessionIdx;
+  state.revealed[idx]=true;renderQuestion();
+  setTimeout(()=>{document.getElementById('q-feedback').scrollIntoView({behavior:'smooth',block:'start'});},100);
+}
+
+function nextQuestion(){
+  if(state.sessionIdx>=state.sessionQs.length-1){showResults();return;}
+  state.sessionIdx++;renderQuestion();
+}
+
+function confirmExit(){
+  if(state.sessionIdx>0){if(confirm('Vols sortir? Perdràs el progrés actual.'))goScreen('home');}
+  else goScreen('home');
+}
+
+// ═══════════════════════════════════════════
+// RESULTATS
+// ═══════════════════════════════════════════
+function showResults(){
+  const qs=state.sessionQs;const answers=state.answers;const total=qs.length;
+  let ok=0,ko=0,skip=0;const wrongIds=[];const byBloc={};
+  qs.forEach((q,i)=>{
+    if(!byBloc[q.bloc])byBloc[q.bloc]={ok:0,ko:0,skip:0};
+    if(answers[i]===null||!state.revealed[i]){skip++;byBloc[q.bloc].skip++;}
+    else if(answers[i]===q.correcta||q.anulada){ok++;byBloc[q.bloc].ok++;}
+    else{ko++;byBloc[q.bloc].ko++;wrongIds.push(q.id);}
+  });
+  const answered=ok+ko;const pct=answered>0?Math.round(ok/answered*100):0;
+  const nota=answered>0?Math.max(0,((ok-ko/3)/total*10)).toFixed(2):'—';
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-label').textContent=pct>=80?'🎉 Excel·lent!':pct>=65?'👍 Bé!':pct>=50?'📚 Pots millorar':'💪 A repassar';
+  document.getElementById('res-sub').textContent=ok+' correctes de '+answered+' contestades';
+  document.getElementById('res-ok').textContent=ok;document.getElementById('res-ko').textContent=ko;document.getElementById('res-skip').textContent=skip;
+  document.getElementById('res-nota').textContent=nota!=='—'?nota+'/10':'—';
+  const blocDiv=document.getElementById('res-by-bloc');blocDiv.innerHTML='';
+  Object.entries(byBloc).forEach(([bloc,b])=>{
+    const tot=b.ok+b.ko+b.skip;const bpct=(b.ok+b.ko)>0?Math.round(b.ok/(b.ok+b.ko)*100):null;
+    const cfg=BLOCS[bloc]||{icon:'📚'};
+    blocDiv.innerHTML+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--gray-3)"><div style="font-size:13px;color:var(--gray-8)">${cfg.icon||''} ${bloc}</div><div style="font-size:13px;font-weight:600;color:${bpct===null?'var(--gray-5)':bpct>=60?'var(--green)':'var(--red)'}">${bpct!==null?bpct+'%':'—'} <span style="font-weight:400;color:var(--gray-5);font-size:11px">(${b.ok}/${tot})</span></div></div>`;
+  });
+  const msgDiv=document.getElementById('res-msg');
+  let msg,msgStyle;
+  if(pct>=80){msg='🎉 Molt bon resultat! Continua practicant.';msgStyle='background:var(--green-light);color:var(--green)';}
+  else if(pct>=65){msg='👍 Bon resultat. Repassa els temes on has fallat.';msgStyle='background:var(--blue-light);color:var(--blue-mid)';}
+  else if(pct>=50){msg='📚 Pots millorar. Repassa especialment TREBEP i DL 1/1997.';msgStyle='background:var(--amber-light);color:var(--amber)';}
+  else{msg='💪 Cal repassar a fons. Utilitza el mode "Respostes incorrectes".';msgStyle='background:var(--red-light);color:var(--red)';}
+  msgDiv.setAttribute('style',msgStyle+';font-size:13px;line-height:1.5;');msgDiv.textContent=msg;
+  saveHistory({date:new Date().toISOString(),bloc:state.currentBloc||'Tots',mode:state.mode,total,ok,ko,skip,pct,nota,ids:qs.map(q=>q.id),wrong:wrongIds});
+  goScreen('results');
+}
+
+function reviewWrong(){
+  const qs=state.sessionQs;const answers=state.answers;const letters=['a)','b)','c)','d)'];
+  const container=document.getElementById('review-list');container.innerHTML='';
+  let count=0;
+  qs.forEach((q,i)=>{
+    if(answers[i]!==null&&answers[i]!==q.correcta&&!q.anulada){count++;
+      const card=document.createElement('div');card.className='review-card';
+      card.innerHTML=`<div class="review-q">${q.pregunta}</div><div class="review-your">✗ La teva: ${letters[answers[i]]} ${q.opcions[answers[i]]}</div><div class="review-correct">✓ Correcta: ${letters[q.correcta]} ${q.opcions[q.correcta]}</div><div style="font-size:12px;color:var(--gray-6);margin-top:8px;line-height:1.5">${q.explicacio}</div>`;
+      container.appendChild(card);
+    }
+  });
+  if(count===0)container.innerHTML='<div class="hist-empty">🎉 No has fallat cap pregunta!</div>';
+  goScreen('review');
+}
+
+// ═══════════════════════════════════════════
+// ESTUDI
+// ═══════════════════════════════════════════
+function renderStudyHome(){
+  renderStudyList(state.studyPart);
+  // Actualitzar tabs
+  document.querySelectorAll('.part-tab').forEach((t,i)=>{
+    t.classList.toggle('active',i===(state.studyPart==='comuna'?0:1));
+  });
+}
+
+function switchPart(part){
+  state.studyPart=part;
+  document.querySelectorAll('.part-tab').forEach((t,i)=>{
+    t.classList.toggle('active',i===(part==='comuna'?0:1));
+  });
+  renderStudyList(part);
+}
+
+function renderStudyList(part){
+  const temes=STUDY.filter(s=>s.part===part);
+  const container=document.getElementById('study-list');
+  container.innerHTML='';
+  if(temes.length===0){
+    container.innerHTML='<div class="hist-empty">Contingut en preparació.<br>S\'anirà afegint progressivament.</div>';
+    return;
+  }
+  // Agrupar per bloc
+  const byBloc={};
+  temes.forEach(t=>{if(!byBloc[t.bloc])byBloc[t.bloc]=[];byBloc[t.bloc].push(t);});
+  Object.entries(byBloc).forEach(([bloc,ts])=>{
+    const cfg=BLOCS[bloc]||{color:'#4b5563',bg:'#f3f4f6',icon:'📚'};
+    const header=document.createElement('div');
+    header.style.cssText='display:flex;align-items:center;gap:8px;padding:12px 0 6px;font-size:12px;font-weight:700;color:var(--gray-6);text-transform:uppercase;letter-spacing:.5px';
+    header.innerHTML=`<span style="background:${cfg.bg};color:${cfg.color};padding:2px 8px;border-radius:99px;font-size:11px">${cfg.icon} ${bloc}</span>`;
+    container.appendChild(header);
+    ts.forEach(t=>{
+      const card=document.createElement('div');card.className='study-card';
+      const qCount=STUDY.find(s=>s.id===t.id)?.questions?.length||0;
+      card.innerHTML=`<div class="study-num">T.${t.numero}</div><div class="study-info"><div class="study-title">${t.titol.length>100?t.titol.substring(0,97)+'...':t.titol}</div><div class="study-bloc">${t.apartats.length} apartats${qCount>0?' · '+qCount+' preguntes vinculades':''}</div></div><div class="study-arrow">›</div>`;
+      card.onclick=()=>openStudyDetail(t.id,false);
+      container.appendChild(card);
+    });
+  });
+}
+
+function openStudyDetail(id,fromQuiz){
+  const tema=STUDY.find(s=>s.id===id);
+  if(!tema)return;
+  state.currentStudyId=id;
+  const partCfg=PARTS[tema.part]||{label:'',icon:''};
+  const cfg=BLOCS[tema.bloc]||{color:'#4b5563'};
+  document.getElementById('detail-topbar-title').textContent='Tema '+tema.numero;
+  document.getElementById('detail-part').innerHTML=`<span style="background:${cfg.color};color:white;padding:3px 10px;border-radius:99px;font-size:11px">${partCfg.icon} ${partCfg.label}</span>`;
+  document.getElementById('detail-num').textContent='Tema '+tema.numero;
+  document.getElementById('detail-title').textContent=tema.titol;
+  document.getElementById('detail-resum').textContent=tema.resum||'';
+  const body=document.getElementById('detail-body');
+  body.innerHTML='';
+  // Apartats
+  tema.apartats.forEach(apt=>{
+    const sec=document.createElement('div');sec.className='detail-section';
+    sec.innerHTML=`<div class="detail-section-title">${apt.titol}</div><div class="detail-section-content">${apt.contingut}</div>`;
+    body.appendChild(sec);
+  });
+  // Taula de dades clau
+  if(tema.claus&&tema.claus.length>0){
+    const sec=document.createElement('div');sec.className='detail-section';
+    let rows=tema.claus.map(c=>`<tr><td>${c.concepte}</td><td>${c.valor}</td></tr>`).join('');
+    sec.innerHTML=`<div class="detail-section-title">Dades clau per a l'examen</div><table class="claus-table"><thead><tr><th>Concepte</th><th>Valor / Resposta</th></tr></thead><tbody>${rows}</tbody></table>`;
+    body.appendChild(sec);
+  }
+  // Nota d'examen
+  if(tema.nota){
+    const nota=document.createElement('div');nota.className='nota-box';
+    nota.innerHTML=`<strong>📌 Nota d'estudi:</strong> ${tema.nota}`;
+    body.appendChild(nota);
+  }
+  // Botó per fer el test del bloc
+  const testBtn=document.createElement('button');testBtn.className='test-link-btn';
+  testBtn.innerHTML='🎯 Fer el test d\'aquest bloc';
+  testBtn.onclick=()=>openBloc(tema.bloc);
+  body.appendChild(testBtn);
+  // Back screen
+  const topbarBack=document.querySelector('#screen-study-detail .topbar-back');
+  topbarBack.onclick=fromQuiz?()=>goScreen('quiz'):()=>goScreen('study-home');
+  goScreen('study-detail');
+}
+
+// ═══════════════════════════════════════════
+// HISTORIAL
+// ═══════════════════════════════════════════
+function renderHistorial(){
+  const hist=loadHistory().reverse();
+  const container=document.getElementById('hist-list');container.innerHTML='';
+  if(hist.length===0){container.innerHTML='<div class="hist-empty">Encara no has fet cap test.<br>Comença des de la pantalla d\'inici.</div>';return;}
+  hist.forEach(h=>{
+    const color=h.pct>=70?'var(--green)':h.pct>=50?'var(--amber)':'var(--red)';
+    const bg=h.pct>=70?'var(--green-light)':h.pct>=50?'var(--amber-light)':'var(--red-light)';
+    const date=new Date(h.date).toLocaleDateString('ca',{day:'2-digit',month:'short',year:'numeric'});
+    const cfg=BLOCS[h.bloc]||{icon:'📚'};
+    const card=document.createElement('div');card.className='hist-card';
+    card.innerHTML=`<div class="hist-circle" style="background:${bg};color:${color}">${h.pct}%</div><div class="hist-info"><div class="hist-title">${cfg.icon||''} ${h.bloc}</div><div class="hist-sub">${date} · ${h.ok}✓ ${h.ko}✗ de ${h.total} · Nota ${h.nota}/10</div></div>`;
+    container.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function loadHistory(){try{return JSON.parse(localStorage.getItem('opos_hist')||'[]');}catch{return[];}}
+function saveHistory(entry){try{const h=loadHistory();h.push(entry);if(h.length>100)h.shift();localStorage.setItem('opos_hist',JSON.stringify(h));}catch{}}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function showInfo(){alert('Opos A1 — Generalitat de Catalunya\n\nPreguntes reals examen 871 (juny 2026)\nTemari oficial 2022\n\nAfegeix temes a study.js i preguntes a questions.js\n\nPuntuació: encerts − errors÷3');}
+
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
+
+renderHome();
+</script>
+</body>
+</html>
